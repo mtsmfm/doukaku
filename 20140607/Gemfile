@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+ruby '2.1.2'
+
+gem 'activesupport', require: 'active_support/all'
+gem 'awesome_print'
+gem 'pry-byebug'
+gem 'tapp'
