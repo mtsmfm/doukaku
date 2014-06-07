@@ -4,12 +4,39 @@ Bundler.require
 class Cell
   attr_accessor :val
 
-  def initialize
+  delegate :blank?, :present, to: :@val
+
+  def initialize(x, y, w, h)
     @val = nil
+    @x = x
+    @y = y
+    @w = w
+    @h = h
+  end
+
+  def adjacent_list
+    return @list if @list
+
+    @list = []
+
+    if @x > 0
+      @h.times do |i|
+        @list << [@x - 1, @y + i]
+      end
+    end
+
+    if @y > 0
+      @w.times do |i|
+        @list << [@x + i, @y - 1]
+      end
+    end
+
+    @list
   end
 
   def add(other)
     unless self.equal? other
+      @val ||= 0
       @val += other.val
     end
   end
@@ -31,7 +58,7 @@ def solve(input)
   x, y = input.scan(/(\d+)x(\d+):/).first.map(&:to_i)
   rects = input.scan(/:(.*)/).first.first.split(?,).map {|r| r.each_char.map(&:to_i) }
 
-  cells = Array.new(x) { Array.new(y) { Cell.new } }
+  cells = Array.new(x) {|i| Array.new(y) {|j| Cell.new(i, j, 1, 1) } }
 
   rects.each do |rect|
     link(cells, rect)
@@ -49,7 +76,7 @@ end
 def link(cells, rect)
   x, y, w, h = rect
 
-  cell = Cell.new
+  cell = Cell.new(x, y, w, h)
 
   w.times do |i|
     h.times do |j|
@@ -59,16 +86,19 @@ def link(cells, rect)
 end
 
 def calc(cells)
-  cells.each.with_index {|row, x| row.each.with_index {|cell, y|
-    if x > 0
-      cell.add(cells[x - 1][y])
-    end
-    if y > 0
-      cell.add(cells[x][y - 1])
-    end
-    binding.pry if x == 0 && y == 5
-    cell.cutoff!
-  }}
+  until cells.all? {|row| row.all?(&:present?) }
+    cells.each.with_index {|row, x| row.each.with_index {|cell, y|
+      next if cell.present?
+
+      targets = cell.adjacent_list.map {|(x, y)| cells[x][y] }
+
+      next if targets.any?(&:blank?)
+
+      targets.each {|t| cell.add(t) }
+
+      cell.cutoff!
+    }}
+  end
 end
 
 DATA.each_line.with_index do |line, i|
