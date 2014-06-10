@@ -68,8 +68,6 @@ def solve(input)
 
   calc(cells)
 
-  binding.pry
-
   cells.last.last.to_s
 end
 
