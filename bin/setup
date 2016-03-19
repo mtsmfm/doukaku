@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+require 'fileutils'
+require 'date'
+include FileUtils
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+root_dir     = Pathname.new(File.expand_path('../../', __FILE__))
+template_dir = root_dir.join('template')
+dir          = root_dir.join(Date.today.strftime('%Y%m%d'))
+
+cp_r template_dir, dir
+
+chdir dir do
+  system! 'bundle install --binstubs'
+  system! 'git add . && git commit -m "init"'
+end
