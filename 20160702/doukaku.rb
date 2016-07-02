@@ -65,13 +65,9 @@ MAP = {
 }
 
 def solve(input)
-  ok = %i(A B C)
-
-  input.reverse.each_char do |c|
-    ok = MAP[c.to_i].select {|k, vs| vs.any? {|v| ok.include?(v) } }.keys
-  end
-
-  ok.any? ? ok.join.downcase : '-'
+  input.reverse.each_char.reduce(%i(A B C)) {|ok, c|
+    MAP[c.to_i].select {|k, vs| vs.any? {|v| ok.include?(v) } }.keys
+  }.join.downcase.presence || ?-
 end
 
 TEST_DATA = <<~EOS
