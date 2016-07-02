@@ -16,53 +16,32 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
-MAP = {
-  1 => {
-    A: %i(A B),
-    B: %i(B C),
-    C: %i(C),
-  },
-  2 => {
-    A: %i(A C),
-    B: %i(B),
-    C: %i(B C),
-  },
-  3 => {
-    A: %i(A C),
-    B: %i(A B),
-    C: %i(C),
-  },
-  4 => {
-    A: %i(A),
-    B: %i(A B),
-    C: %i(B C),
-  },
-  5 => {
-    A: %i(A),
-    B: %i(B C),
-    C: %i(A C),
-  },
-  6 => {
-    A: %i(A B),
-    B: %i(B),
-    C: %i(A C),
-  },
-  7 => {
-    A: %i(A),
-    B: %i(),
-    C: %i(C),
-  },
-  8 => {
-    A: %i(),
-    B: %i(B),
-    C: %i(C),
-  },
-  9 => {
-    A: %i(A),
-    B: %i(B),
-    C: %i(),
-  },
-}
+MAP = Hash.new do |hash, key|
+  tracks = (:A..:C).map {|c| [c, [c]] }.to_h
+
+  case key
+  when 1
+    tracks[:A] << :B
+    tracks[:B] << :C
+  when 2
+    tracks[:A] << :C
+    tracks[:C] << :B
+  when 3
+    tracks[:A] << :C
+    tracks[:B] << :A
+  when 4..6
+    tracks = tracks.keys.map {|k| [k, MAP[key - 3].select {|_, v| v.include?(k) }.keys] }.to_h
+  when 7
+    tracks[:B] = []
+  when 8
+    tracks[:A] = []
+  when 9
+    tracks[:C] = []
+  end
+
+  tracks
+end
+
 
 def solve(input)
   input.reverse.each_char.reduce(%i(A B C)) {|ok, c|
