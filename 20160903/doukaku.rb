@@ -45,20 +45,33 @@ class Seg
   end
 end
 
+def calc_min(candidates)
+  nils = candidates[0..-2].take_while {|xs| xs.include?(nil) }
+  first_digit, *xs = candidates[nils.count..-1]
+  if (candidates.count - nils.count) > 1
+    return if first_digit == [0]
+    first_digit = first_digit.without(0)
+  end
+
+  [first_digit, *xs].map(&:compact).map(&:min).join
+end
+
+def calc_max(candidates)
+  candidates.map(&:compact).map(&:max).join
+end
+
 def solve(input)
   lights, darks = input.split(?,).map {|e| e.split(?:) }
-  segs = lights.zip(darks).map.with_index {|(l, d), i| Seg.new(l, d) }
+  segs = lights.zip(darks).map {|l, d| Seg.new(l, d) }
   candidates = segs.map(&:candidates)
+  candidates = candidates.drop_while {|xs| xs != [nil] } if candidates.include?([nil])
 
   return '-' if candidates.any?(&:empty?)
 
-  nils = candidates[0..-2].take_while {|xs| xs.include?(nil) }
-  first_digit = candidates[nils.count]
+  min = calc_min(candidates)
+  max = calc_max(candidates)
 
-  min = ([
-    (lights.count - nils.count) == 1 ? first_digit.without(nil).min : first_digit.without(0, nil).min
-  ] + candidates[(nils.count + 1)..-1].map {|x| x.without(nil).min }).join
-  max = candidates.map {|x| x.without(nil).max }.join
+  return '-' if min.blank?
 
   [min, max].join(?,)
 end
