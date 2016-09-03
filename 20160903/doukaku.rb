@@ -16,7 +16,45 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
+class Seg
+  class << self
+    def convert_str_to_set(str)
+      str.to_i(16).to_s(2).chars.reverse.map.with_index.select {|e, i| e == '1' }.map(&:last).to_set
+    end
+  end
+
+  LIGHTS = %w(3f 06 5b 4f 66 6d 7d 27 7f 6f).map {|s| convert_str_to_set(s) }.map.with_index.to_a
+  DARKS = %w(40 79 24 30 19 12 02 58 00 10).map {|s| convert_str_to_set(s) }.map.with_index.to_a
+
+  def initialize(light, dark)
+    @light = self.class.convert_str_to_set(light)
+    @dark = self.class.convert_str_to_set(dark)
+  end
+
+  def candidates
+    ls = LIGHTS.select {|e, i| e.superset?(@light) }.map(&:last)
+    ds = DARKS.select {|e, i| e.superset?(@dark) }.map(&:last)
+
+    result = (ls & ds)
+
+    if ls.count == 10
+      result << nil
+    end
+
+    result
+  end
+end
+
 def solve(input)
+  lights, darks = input.split(?,).map {|e| e.split(?:) }
+  segs = lights.zip(darks).map.with_index {|(l, d), i| Seg.new(l, d) }
+  candidates = segs.map(&:candidates)
+
+  return '-' if candidates.any?(&:empty?)
+
+  binding.pry
+
+  [candidates.map(&:min).join.to_i, candidates.map(&:max).join].join(?,)
 end
 
 TEST_DATA = <<~EOS
