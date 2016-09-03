@@ -52,9 +52,15 @@ def solve(input)
 
   return '-' if candidates.any?(&:empty?)
 
-  binding.pry
+  nils = candidates[0..-2].take_while {|xs| xs.include?(nil) }
+  first_digit = candidates[nils.count]
 
-  [candidates.map(&:min).join.to_i, candidates.map(&:max).join].join(?,)
+  min = ([
+    (lights.count - nils.count) == 1 ? first_digit.without(nil).min : first_digit.without(0, nil).min
+  ] + candidates[(nils.count + 1)..-1].map {|x| x.without(nil).min }).join
+  max = candidates.map {|x| x.without(nil).max }.join
+
+  [min, max].join(?,)
 end
 
 TEST_DATA = <<~EOS
