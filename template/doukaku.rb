@@ -26,9 +26,9 @@ Minitest::Reporters.use!(Minitest::Reporters::ProgressReporter.new)
 
 describe 'Doukaku' do
   TEST_DATA.each_line do |test|
-    input, expected = test.scan(/"(.*)", "(.*)"/)[0]
+    number, input, expected = test.scan(/(\d+).*"(.*)", "(.*)"/)[0]
 
-    it input do
+    it "##{number}" do
       assert_equal expected, solve(input)
     end
   end
