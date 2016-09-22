@@ -25,29 +25,6 @@ class Board
     @board = Array.new(height) { Array.new(width) { ?. } }
   end
 
-  def live!
-    @board = map.with_index {|row, y| row.map.with_index {|c, x| live?(x, y) ? c : ?. } }
-  end
-
-  def live?(x, y, mark = [])
-    mark << [x, y]
-    return false if board[y][x] == ?.
-
-    top    = board[y - 1][x] if y - 1 >= 0
-    bottom = board[y + 1][x] if y + 1 < height
-    left   = board[y][x - 1] if x - 1 >= 0
-    right  = board[y][x + 1] if x + 1 < width
-
-    return true if [top, bottom, left, right].include?(?.)
-
-    return live?(x, y - 1, mark) if board[y][x] == top && mark.exclude?([x, y - 1])
-    return live?(x, y + 1, mark) if board[y][x] == bottom && mark.exclude?([x, y + 1])
-    return live?(x - 1, y, mark) if board[y][x] == left && mark.exclude?([x - 1, y])
-    return live?(x + 1, y, mark) if board[y][x] == right && mark.exclude?([x + 1, y])
-
-    false
-  end
-
   def count(target)
     board[0...-1].each.with_index.sum {|row, y|
       row.each.with_index.count {|c, x|
