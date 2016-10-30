@@ -1,0 +1,16 @@
+version: '2'
+services:
+  ruby:
+    image: ruby:2.3
+    command: bash
+    working_dir: /app
+    environment:
+      BUNDLE_PATH: /tmp/vendor/bundle
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    volumes:
+      - .:/app
+      - bundle:/tmp/vendor/bundle
+      - ~/.gitconfig:/root/.gitconfig
+volumes:
+  bundle:
