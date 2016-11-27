@@ -1,0 +1,1 @@
+eval File.read('doukaku.rb').scan(/gemfile do\n(.*?)\nend/m)[0][0]
