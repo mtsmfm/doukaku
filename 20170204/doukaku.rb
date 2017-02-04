@@ -3,8 +3,6 @@ require 'bundler/inline'
 gemfile do
   source 'https://rubygems.org'
 
-  gem 'activesupport', require: 'active_support/all'
-
   gem 'minitest', require: 'minitest/autorun'
   gem 'minitest-reporters'
 
@@ -63,9 +61,7 @@ end
 
 def solve(input)
   base, a, b = input.scan(/\d+/).map(&:to_i)
-
-  tree = Tree.new(base)
-  tree.distance(a, b).to_s
+  Tree.new(base).distance(a, b).to_s
 end
 
 TEST_DATA = <<~EOS
