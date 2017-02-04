@@ -14,8 +14,6 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
-require 'prime'
-
 class Tree
   attr_reader :base, :leaves, :parents
 
