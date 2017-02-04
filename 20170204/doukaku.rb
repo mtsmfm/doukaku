@@ -55,7 +55,8 @@ class Tree
   def dividers_for(base)
     return [] if base <= 3
 
-    (2...base).select {|n| base % n == 0 }.map {|n| n + 1 }
+    xs = base.prime_division.flat_map {|n, e| [n] * e }
+    (1...xs.count).flat_map {|i| xs.combination(i).map {|_xs| _xs.reduce(:*) + 1 }.uniq }
   end
 end
 
