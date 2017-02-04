@@ -1,7 +1,7 @@
 version: '2'
 services:
   ruby:
-    image: ruby:2.3
+    image: ruby:2.4
     command: bash
     working_dir: /app
     environment:
