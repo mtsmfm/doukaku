@@ -14,23 +14,23 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
-class Tree
-  attr_reader :base, :leaves, :parents
+class Node
+  attr_reader :base, :children, :ancestors
 
   include Enumerable
 
-  def initialize(base, parents=[])
+  def initialize(base, ancestors=[])
     @base = base
-    @parents = parents
-    @leaves = dividers_for(base).map do |n|
-      Tree.new(n, [self] + parents)
+    @ancestors = [self] + ancestors
+    @children = children_for(base).map do |n|
+      Node.new(n, @ancestors)
     end
   end
 
   def each(&block)
     block.call(self)
 
-    leaves.each do |leaf|
+    children.each do |leaf|
       leaf.each(&block)
     end
   end
@@ -40,17 +40,14 @@ class Tree
     bs = select {|tree| tree.base == b }
 
     as.product(bs).map {|_a, _b|
-      next _a.parents.index(_b) + 1 if _a.parents.include?(_b)
-      next _b.parents.index(_a) + 1 if _b.parents.include?(_a)
-
-      common_parent = (_a.parents & _b.parents).first
-      _a.parents.index(common_parent) + _b.parents.index(common_parent) + 2
+      common_ancestor = (_a.ancestors & _b.ancestors).first
+      _a.ancestors.index(common_ancestor) + _b.ancestors.index(common_ancestor)
     }.min
   end
 
   private
 
-  def dividers_for(base)
+  def children_for(base)
     return [] if base <= 3
 
     (2...base).select {|n| base % n == 0 }.map {|n| n + 1 }
@@ -59,7 +56,7 @@ end
 
 def solve(input)
   base, a, b = input.scan(/\d+/).map(&:to_i)
-  Tree.new(base).distance(a, b).to_s
+  Node.new(base).distance(a, b).to_s
 end
 
 TEST_DATA = <<~EOS
