@@ -24,7 +24,10 @@ EOS
 
 Minitest::Reporters.use!(Minitest::Reporters::ProgressReporter.new)
 
+# docker-compose run --rm -w /app/YYYYmmdd bundle exec ruby doukaku.rb -n /#1$/
 describe 'Doukaku' do
+  def self.test_order; :sorted; end
+
   TEST_DATA.each_line do |test|
     number, input, expected = test.scan(/(\d+).*"(.*)", "(.*)"/)[0]
 
