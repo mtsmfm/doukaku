@@ -64,13 +64,34 @@ class Array
 end
 
 def cross_rect(rect1, rect2)
-  cross_points = [[rect1, rect2], [rect2, rect1]].flat_map {|a, b|
+  return rect2 if rect1.cover?(rect2.x1, rect2.y1) && rect1.cover?(rect2.x2, rect2.y2)
+  return rect1 if rect2.cover?(rect1.x1, rect1.y1) && rect2.cover?(rect1.x2, rect1.y2)
+
+  cross_points = [rect1, rect2].permutation(2).flat_map {|a, b|
     a.v_lines.product(b.h_lines).map {|l1, l2| l1.cross_point(l2) }
-  }.compact
+  }.compact.uniq
 
   case cross_points.count
+  when 1
+    cross_points.first * 2
   when 2
-    cross_points.flatten
+    if cross_points.map(&:first).uniq.one?
+      rect = [rect1, rect2].find {|r| !(r.x1 == cross_points[0][0] && r.x2 == cross_points[0][0]) }
+      if rect.y1 == cross_points[0][1]
+        cross_points[0] + [rect.x2, rect.y2]
+      else
+        [rect.x1, rect.y1] + cross_points[1]
+      end
+    elsif cross_points.map(&:last).uniq.one?
+      rect = [rect1, rect2].find {|r| !(r.y1 == cross_points[0][1] && r.y2 == cross_points[0][1]) }
+      if rect.x1 == cross_points[0][0]
+        [rect.x1, rect.y1] + cross_points[1]
+      else
+        cross_points[0] + [rect.x2, rect.y2]
+      end
+    else
+      cross_points.flatten
+    end
   when 4
     cross_points.first + cross_points.last
   else
@@ -81,8 +102,15 @@ end
 def solve(input)
   a, b, c = input.scan(/(\d+),(\d+)/).flatten.map(&:to_i).each_slice(4).to_a
 
-  [a, b, c].permutation(3).sum {|r1, r2, other|
+  binding.pry
+
+  [
+    [a, b, c],
+    [a, c, b],
+    [b, c, a]
+  ].sum {|r1, r2, other|
     crossed_rect = cross_rect(r1, r2)
+    binding.pry
     crossed_rect.area - cross_rect(crossed_rect, other).area
   }.to_s
 end
