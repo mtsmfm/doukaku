@@ -59,7 +59,7 @@ S
 X X X
  X
 S
-].map {|s| s.each_line.map {|l| l.chomp.chars } }.map {|xs| normalize(xs) }
+]
 
 D = [
 <<~S,
@@ -90,7 +90,7 @@ S
  X
 X X X
 S
-].map {|s| s.each_line.map {|l| l.chomp.chars } }.map {|xs| normalize(xs) }
+]
 
 I = [
 <<~S,
@@ -108,24 +108,16 @@ S
  X
 X
 S
-].map {|s| s.each_line.map {|l| l.chomp.chars } }.map {|xs| normalize(xs) }
+]
 
-def b?(board)
-  normalized_board = normalize(board)
-
-  B.any? {|b| normalize(board) == b }
-end
-
-def d?(board)
-  normalized_board = normalize(board)
-
-  D.any? {|d| normalize(board) == d }
-end
-
-def i?(board)
-  normalized_board = normalize(board)
-
-  I.any? {|i| normalize(board) == i }
+self.class.constants.select {|c| c.length == 1 }.each do |c|
+  self.class.const_get(c).map! {|s| s.each_line.map {|l| l.chomp.chars } }.map! {|xs| normalize(xs) }
+  eval <<~RUBY
+    def #{c.to_s.downcase}?(board)
+      normalized_board = normalize(board)
+      #{c.to_s}.any? {|c| normalize(board) == c }
+    end
+  RUBY
 end
 
 def solve(input)
