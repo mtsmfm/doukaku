@@ -5,12 +5,12 @@ services:
     command: bash
     working_dir: /app
     environment:
-      BUNDLE_PATH: /tmp/vendor/bundle
+      BUNDLE_PATH: /app/vendor/bundle
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
     volumes:
-      - .:/app
-      - bundle:/tmp/vendor/bundle
+      - doukaku-sync:/app
       - ~/.gitconfig:/root/.gitconfig
 volumes:
-  bundle:
+  doukaku-sync:
+    external: true
