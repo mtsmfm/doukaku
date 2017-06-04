@@ -111,14 +111,11 @@ def ok?(board, omino, b_x, b_y)
 
     return false unless b
 
-    if mapping[col]
-      return false unless (mapping[col] + b) == 7
-    else
-      mapping[col] = b
-    end
+    mapping[col] ||= []
+    mapping[col] << b
   end
 
-  true
+  return mapping.values.map(&:sum) == [7, 7, 7] && mapping.values.flatten.uniq.count == 6
 end
 
 def positions(input)
@@ -338,6 +335,8 @@ TEST_DATA = <<~EOS
 /*134*/ test("1512663,1525531,5456426,6336325,4324465,6512242,4112466", "true");
 /*135*/ test("2236563,6644542,4425515,6641142,4214543,1156426,3225413", "false");
 /*136*/ test("5545354,6566343,3525411,5356165,4625265,1535435,5522665", "false");
+/*137*/ test("16161,61616,16161", "false");
+/*138*/ test("2431,6354,2341", "false");
 EOS
 
 Minitest::Reporters.use!(Minitest::Reporters::ProgressReporter.new)

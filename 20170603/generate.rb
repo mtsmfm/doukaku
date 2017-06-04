@@ -159,3 +159,16 @@ File.write("doukaku.json", data.map.with_index {|input, i|
     image:    draw(input)
   }
 }.to_json)
+
+missed_data = %w(
+  16161,61616,16161
+  2431,6354,2341
+)
+
+File.write("doukaku2.json", missed_data.map.with_index {|input, i|
+  {
+    input:    input,
+    expected: solve(input),
+    image:    draw(input)
+  }
+}.to_json)
