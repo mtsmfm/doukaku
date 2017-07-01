@@ -16,7 +16,66 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
+class Board
+  def initialize
+    @board = [
+      [0, 1],
+      [2, nil]
+    ]
+    @count = 3
+  end
+
+  def increment!
+    size = board.size
+
+    size.times do |y|
+      size.times do |x|
+        if col = board[y][x]
+          board[y][size + x] = col + self.count
+          board[size + y] ||= []
+          board[size + y][x] = col + (self.count * 2)
+        end
+      end
+    end
+
+    self.count *= 3
+  end
+
+  def find_index(num)
+    board.each.with_index do |row, y|
+      row.each.with_index do |col, x|
+        return [x, y] if col == num
+      end
+    end
+
+    raise
+  end
+
+  def [](x, y)
+    return nil if x < 0 || y < 0
+
+    board.dig(y, x)
+  end
+
+  attr_reader :board
+  attr_accessor :count
+end
+
+$board = Board.new
+14.times do
+  $board.increment!
+end
+
 def solve(input)
+  input = input.to_i
+
+  x, y = $board.find_index(input)
+  [
+    $board[x, y - 1],
+    $board[x, y + 1],
+    $board[x - 1, y],
+    $board[x + 1, y]
+  ].compact.sort.join(?,)
 end
 
 TEST_DATA = <<~EOS

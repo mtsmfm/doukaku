@@ -4,4 +4,3 @@ options:
 syncs:
   doukaku-sync:
     src: .
-    sync_userid: 1000
