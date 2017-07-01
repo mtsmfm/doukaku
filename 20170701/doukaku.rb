@@ -62,7 +62,7 @@ class Board
 end
 
 $board = Board.new
-14.times do
+13.times do
   $board.increment!
 end
 
