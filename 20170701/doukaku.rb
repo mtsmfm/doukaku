@@ -59,17 +59,20 @@ class Board
 
   attr_reader :board
   attr_accessor :count
+
+  delegate :size, to: :board
 end
 
 $board = Board.new
-13.times do
-  $board.increment!
-end
 
 def solve(input)
   input = input.to_i
 
+  $board.increment! while input >= $board.count
+
   x, y = $board.find_index(input)
+  $board.increment! if x + 1 == $board.size || y + 1 == $board.size
+
   [
     $board[x, y - 1],
     $board[x, y + 1],
