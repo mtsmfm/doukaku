@@ -41,7 +41,7 @@ class Board
   end
 
   def count(a, b, d, h)
-    sum = (1...h).sum do |i|
+    h.times.sum do |i|
       case d
       when ?R
         ((b - i)..(b + i)).count do |y|
@@ -60,12 +60,6 @@ class Board
           include?(x, b + i)
         end
       end
-    end
-
-    if include?(a, b)
-      sum + 1
-    else
-      sum
     end
   end
 
