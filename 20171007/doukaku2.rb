@@ -18,46 +18,61 @@ end
 
 class Board
   def initialize
-    @board = {}
-    @point = 0
+    @x_range = {}
+    @y_range = {}
   end
 
-  attr_reader :point
-
   def fill(a, b, d, h)
-    _fill(a, b)
+    @x_range[b] = a..a
+    @y_range[a] = b..b
 
     (1...h).each do |i|
-      puts "#{i} / #{h}" if h > 1000 && i % (h / 100) == 0
       case d
       when ?R
-        ((b - i)..(b + i)).each do |y|
-          _fill(a - i, y)
+        @y_range[a - i] = (b - i)..(b + i)
+      when ?L
+        @y_range[a + i] = (b - i)..(b + i)
+      when ?B
+        @x_range[b - i] = (a - i)..(a + i)
+      when ?T
+        @x_range[b + i] = (a - i)..(a + i)
+      end
+    end
+  end
+
+  def count(a, b, d, h)
+    sum = (1...h).sum do |i|
+      case d
+      when ?R
+        ((b - i)..(b + i)).count do |y|
+          include?(a - i, y)
         end
       when ?L
-        ((b - i)..(b + i)).each do |y|
-          _fill(a + i, y)
+        ((b - i)..(b + i)).count do |y|
+          include?(a + i, y)
         end
       when ?B
-        ((a - i)..(a + i)).each do |x|
-          _fill(x, b - i)
+        ((a - i)..(a + i)).count do |x|
+          include?(x, b - i)
         end
       when ?T
-        ((a - i)..(a + i)).each do |x|
-          _fill(x, b + i)
+        ((a - i)..(a + i)).count do |x|
+          include?(x, b + i)
         end
       end
+    end
+
+    if include?(a, b)
+      sum + 1
+    else
+      sum
     end
   end
 
   private
 
-  def _fill(x, y)
-    key = [x, y].to_s
-    if @board.key?(key)
-      @point += 1
-    end
-    @board[key] = true
+  def include?(x , y)
+    @x_range[y]&.include?(x) || @y_range[x]&.include?(y)
   end
 end
 
@@ -66,8 +81,7 @@ def solve(input)
 
   board = Board.new
   board.fill(a1.to_i, b1.to_i, d1, h1.to_i)
-  board.fill(a2.to_i, b2.to_i, d2, h2.to_i)
-  board.point.to_s
+  board.count(a2.to_i, b2.to_i, d2, h2.to_i).to_s
 end
 
 TEST_DATA = <<~EOS
