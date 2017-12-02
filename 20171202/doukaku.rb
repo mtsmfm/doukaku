@@ -92,7 +92,7 @@ class Map
   end
 
   def route_length
-    @map.count(&:itself)
+    @map.count(true)
   end
 end
 
