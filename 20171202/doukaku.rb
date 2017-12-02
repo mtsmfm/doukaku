@@ -98,12 +98,12 @@ end
 
 Point = Struct.new(:x, :y)
 def Point.from_char(char)
-  new(*[*0..9, *?A..?Z].map(&:to_s).index(char).divmod(6).reverse)
+  new(*char.to_i(36).divmod(6).reverse)
 end
 
 class Point
   def to_s
-    [*0..9, *?A..?Z].map(&:to_s)[x + y * 6]
+    (x + y * 6).to_s(36).upcase
   end
 end
 
