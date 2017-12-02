@@ -16,36 +16,44 @@ gemfile do
   gem 'pry-stack_explorer'
 end
 
-WALL = %w(
-  12
-  28
-  4A
-  67
-  AB
-  7D
-  8E
-  AG
-  BH
-  DE
-  EF
-  GH
-  DJ
-  FL
-  IJ
-  MN
-  KQ
-  LR
-  OP
-  RS
-  OU
-  QW
-  TZ
-  WX
-  XY
-).to_set
+Point = Struct.new(:x, :y)
+def Point.from_char(char)
+  new(*char.to_i(36).divmod(6).reverse)
+end
 
 class Map
-  def initialize(start, goal, map = Array.new(36), current = Point.from_char(start))
+  WALL = %w(
+    12
+    28
+    4A
+    67
+    AB
+    7D
+    8E
+    AG
+    BH
+    DE
+    EF
+    GH
+    DJ
+    FL
+    IJ
+    MN
+    KQ
+    LR
+    OP
+    RS
+    OU
+    QW
+    TZ
+    WX
+    XY
+  ).flat_map {|wall|
+    ps = wall.chars.map {|c| Point.from_char(c) }
+    [ps, ps.reverse]
+  }.to_set
+
+  def initialize(start, goal, map = Array.new(36), current = start)
     @start = start
     @goal = goal
     @map = map
@@ -59,13 +67,12 @@ class Map
       Point.new(@current.x, @current.y - 1),
       Point.new(@current.x, @current.y + 1)
     ].select do |point|
-      (0..5).include?(point.x) && (0..5).include?(point.y) &&
-        !marked?(point) && !(WALL.include?(@current.to_s + point.to_s) || WALL.include?(point.to_s + @current.to_s))
+      (0..5).include?(point.x) && (0..5).include?(point.y) && !marked?(point) && !WALL.include?([@current, point])
     end
   end
 
   def goal?
-    @current.to_s == @goal
+    @current == @goal
   end
 
   def marked?(point)
@@ -96,17 +103,6 @@ class Map
   end
 end
 
-Point = Struct.new(:x, :y)
-def Point.from_char(char)
-  new(*char.to_i(36).divmod(6).reverse)
-end
-
-class Point
-  def to_s
-    (x + y * 6).to_s(36).upcase
-  end
-end
-
 def find_all(map)
   return map if map.goal?
   return if map.movable_points.empty?
@@ -117,7 +113,7 @@ def find_all(map)
 end
 
 def solve(input)
-  map = Map.new(*input.chars)
+  map = Map.new(*input.chars.map {|c| Point.from_char(c) })
   find_all(map).min_by(&:route_length).route_length.to_s
 end
 
