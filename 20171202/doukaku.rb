@@ -104,7 +104,7 @@ end
 
 class Point
   def to_s
-    ((0..9).to_a + (?A..?Z).to_a).map(&:to_s)[x + y * 6]
+    [*0..9, *?A..?Z].map(&:to_s)[x + y * 6]
   end
 end
 
