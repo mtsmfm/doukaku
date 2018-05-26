@@ -1,0 +1,10 @@
+{
+  "name": "20180526",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ts-node": "^6.0.5",
+    "typescript": "^2.8.3"
+  }
+}
